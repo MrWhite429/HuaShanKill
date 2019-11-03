@@ -1,0 +1,110 @@
+###ABOUT THE GAME###
+//因为害怕自己忘记了
+
+一、关于事件evt的声明方法
+1.常规
+evt = [event_type , ... ]
+evt为列表结构，表达场上发生的事件。
+evt可以通过pl.upload(evt)向全局传播，并等待玩家调用self.response(evt)进行响应。
+
+2.声明规则
+事件根据event_type的不同，分为不同的声明方式。
+
+(1)阶段的开始/结束(event_tpye=1)
+evt = [1,player,stage_num,0/1]
+player为当前回合的玩家
+stage_num即阶段代表的编号：准备=0，判定=1，摸牌=2，出牌=3，弃牌=4，结束=5
+0/1：阶段开始时需声明0，结束时声明1
+
+(2)牌指定目标(event_tpye=2)
+evt = [2,user,aimer,now_card]
+user,aimer为使用者，被指定者
+now_card为指定的牌
+
+(3)牌的使用(event_tpye=3)
+evt = [3,user,aimer,now_card]
+user,aimer为使用者，承受者(AOE、装备的aimer为user本身)
+now_card为使用的牌
+
+(4)受到伤害(event_type=4)
+evt = [4,user,num,aimer,type]
+aimer,user为受伤者，伤害造成者(体力流失不计入)
+num为减少的体力值
+type为伤害类型:0(无属性),1(火焰),2(雷电)
+
+(5)体力流失/失去体力(event_type=5)
+evt = [5,player,num]
+player为失去体力者
+num为减少的体力值
+
+(6)打出/失去手牌(event_type=6)
+evt = [6,player,now_card]
+player为牌的打出者
+now_card为打出的牌
+PS:此类事件一般指need(),multi_need()或技能中的要求
+
+(7)获得/失去装备牌(event_type=7)
+evt = [7,user,aimer,equip_type,now_card,0/1]
+user为发动者（如替换装备时aimer为user自身)，aimer为承受者
+equip_type为装备类型：武器=0，防具=1，+1马=2，-1马=3，宝物=4
+now_card为指定的牌
+0/1:失去装备牌声明0，获得装备牌需声明1
+
+(8)死亡(event_type=8)
+evt = [8,player]
+player为死亡者
+
+(9)弃置(event_type=9)
+evt = [9,player,now_card]
+player为弃置者(一般认为是指弃牌阶段的事件)
+now_card为被弃置的牌
+
+二、关于新增人物(player&gamer)的方法
+1.人物文件结构
+所有可以被引用的人物，数据均需要放置在"resources/player/"下，
+名称为name的人物应建立name文件夹，
+脚本和图片以name/name.py,name/name_G.py,name/name.jpg格式存储
+其中name.py为电脑对应的脚本，name_G.py为玩家对应的脚本,name.jpg为武将图片
+
+PS：人物中文姓名尽量按照"姓(首字母大写)+名(每个字首字母的大写)"格式
+    如：诸葛亮->ZhugeL，孙尚香->SunSX，
+    其余内容可通过前缀和后缀体现，与名字之间用下划线连接
+    如：神·赵云->Shen_ZhaoY
+
+PPS：其他乱七八糟的可以随便。
+
+2.name.py声明要求
+引入相应人物需声明Model类，以player.py中的player类为基类
+此外，应引入必要的output.py,cards.py,pygame库等文件。
+如：
+import random
+import player as pl
+import cards as cd
+import output as op
+import pygame
+from pygame.locals import *
+
+class Model(pl.Player):
+    ...
+
+3.name_G声明要求
+基本与name.py声明要求相同，Model类以gamer.py中的gamer类为基类
+
+4.name.jpg声明要求
+图片最终显示尺寸为(100×160)，实际图片大小应在(437×700)及以上为宜。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
